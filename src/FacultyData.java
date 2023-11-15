@@ -4,12 +4,12 @@ import java.io.IOException;
 
 public class FacultyData {
 
-    private int[] facultyIds;
-    private String[] facultyNames;
-    private String[] facultyEmails;
-    private String[] facultyFirstNames;
-    private String[] facultyLastNames;
     public static int MAX_FACULTY = 242;
+    private final int[] facultyIds;
+    private final String[] facultyEmails;
+    private final String[] facultyFirstNames;
+    private final String[] facultyLastNames;
+    private String[] facultyNames;
 
     public FacultyData(int[] facultyIds, String[] facultyFirstNames, String[] facultyLastNames, String[] facultyEmails) {
         this.facultyIds = facultyIds;
@@ -17,7 +17,6 @@ public class FacultyData {
         this.facultyLastNames = facultyLastNames;
         this.facultyEmails = facultyEmails;
     }
-
 
 
     public static FacultyData readFacultyFromFile(String filePath) throws IOException {
@@ -36,6 +35,7 @@ public class FacultyData {
                 facultyIds[index] = Integer.parseInt(parts[0]);
 
                 // Split the name into first and last name
+                // I had trouble importing without the split
                 String[] nameParts = parts[1].split("_");
                 facultyFirstNames[index] = nameParts[0];
                 facultyLastNames[index] = nameParts.length > 1 ? nameParts[1] : "";
@@ -52,7 +52,6 @@ public class FacultyData {
     }
 
 
-
     public int[] getFacultyIds() {
         return facultyIds;
     }
@@ -67,6 +66,10 @@ public class FacultyData {
         return facultyNames;
     }
 
+    public String[] getFacultyFirstNames() {
+        return facultyFirstNames;
+    }
+
     public String[] getFacultyLastNames() {
         return facultyLastNames;
     }
@@ -74,4 +77,5 @@ public class FacultyData {
     public String[] getFacultyEmails() {
         return facultyEmails;
     }
+
 }

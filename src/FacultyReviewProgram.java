@@ -1,13 +1,11 @@
 import javax.swing.*;
+import javax.swing.table.DefaultTableModel;
 import java.awt.*;
+import java.awt.event.ActionListener;
 import java.io.IOException;
-import java.util.Arrays;
 
 public class FacultyReviewProgram {
 
-    // Finals to use for the question numbers
-    private static final int QUESTION_1_INDEX = 0;
-    private static final int QUESTION_4_INDEX = 3;
 
     // Class usages for the data
     private FacultyData facultyData;
@@ -19,8 +17,12 @@ public class FacultyReviewProgram {
         try {
             facultyData = FacultyData.readFacultyFromFile("faculty.txt");
 
+            // Debug Statements!
             // Print faculty names for debugging
-            System.out.println("Faculty Names: " + Arrays.toString(facultyData.getFacultyNames()));
+            // System.out.println("Faculty Names: " + Arrays.toString(facultyData.getFacultyNames()));
+            // System.out.println("Faculty IDs: " + Arrays.toString(facultyData.getFacultyIds()));
+            // System.out.println("Faculty Emails: " + Arrays.toString(facultyData.getFacultyEmails()));
+
 
             // Initialize the surveyData object and read survey information
             surveyData = SurveyData.readSurveyFromFile("facultyReviewData.txt");
@@ -30,11 +32,13 @@ public class FacultyReviewProgram {
         }
 
         // Creating a Method for the GUI instead of having it in the main method
-        createAndShowGUI();
+        createGUI();
     }
 
 
     // Main Method using the GUI Method
+    // I used this and found information on the GUI and SwingUtilities
+    // https://www.javamex.com/tutorials/threads/invokelater.shtml
     public static void main(String[] args) {
         // Create an instance of FacultyReviewProgram
         SwingUtilities.invokeLater(FacultyReviewProgram::new);
@@ -42,87 +46,65 @@ public class FacultyReviewProgram {
 
 
     /// Method to
-    private void createAndShowGUI() {
-
-        // Title of the Program to display in the Java Swing Window
+    private void createGUI() {
+        // Frame Creation
         JFrame frame = new JFrame("Faculty Review Program");
-
-        // When you close the swing window, exit the program
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
-        // Creating a 1080p window as this is the standard resolution for most monitors
-        frame.setSize(1920, 1080);
+        // Frame Size
+        frame.setSize(280, 400);
 
-        // Creating the buttons to handle the requests
-        JButton button1 = new JButton("Search by Faculty ID");
-        JButton button2 = new JButton("Search by Faculty Last Name");
-        JButton button3 = new JButton("Search by Faculty Email");
-        JButton button4 = new JButton("Find Highest Average for a Question");
-        JButton button5 = new JButton("Find the Overall Average for a Question");
+        // Grid Layout
+        JPanel buttonPanel = new JPanel(new GridLayout(6, 1, 10, 10));
 
-        // Creating a GridBagLayout to handle the buttons
-        // https://docs.oracle.com/javase/tutorial/uiswing/layout/gridbag.html
-        JPanel panel = new JPanel(new GridBagLayout());
+        // Button Panel Border
+        buttonPanel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
 
-        // Creating the constraints for the buttons
-        // Configuring the Gridbag Layout
-        // Did I mention I don't care for GridBag? hah.
-        GridBagConstraints constraints = new GridBagConstraints();
-        constraints.gridy = 0;
-        constraints.anchor = GridBagConstraints.CENTER;
-        constraints.insets = new Insets(10, 10, 10, 10);
 
-        // Adding the buttons to the panel
-        constraints.gridx = 0;
-        panel.add(button1, constraints);
+        // Adding the buttons with the addButton Method (see below)
+        // Search faculty information by ID
+        addButton(buttonPanel, "Search by Faculty ID", e -> displayIDAverage());
 
-        constraints.gridx = 1;
-        panel.add(button2, constraints);
+        // Search faculty information by last name
+        addButton(buttonPanel, "Search by Faculty Last Name", e -> displayNameAverage());
 
-        constraints.gridx = 2;
-        panel.add(button3, constraints);
+        // Search faculty information by email
+        addButton(buttonPanel, "Search by Faculty Email", e -> displayEmailAverage());
 
-        constraints.gridx = 3;
-        panel.add(button4, constraints);
+        // Finds the highest average for a question input by the user, and displays the faculty member with the highest average
+        addButton(buttonPanel, "Find Highest Average for a Question", e -> questionHighestAverage());
 
-        constraints.gridx = 4;
-        panel.add(button5, constraints);
+        // Displays the overall average for a question input by the user
+        addButton(buttonPanel, "Find Overall Average for a Question", e -> calculateAndDisplayOverallAverage());
 
-        // Reducing the button code by switching from Active Listeners to Lambda Expressions
-        // When you click the button, the program will run the method associated with the button
-        button1.addActionListener(e -> displayIDAverage());
-        button2.addActionListener(e -> displayNameAverage());
-        button3.addActionListener(e -> displayEmailAverage());
-        button4.addActionListener(e -> {
-            String questionNumberString = JOptionPane.showInputDialog("Enter Question Number (1-4):");
+        // Creates a Faculty Table
+        addButton(buttonPanel, "Display Faculty Information", e -> displayFacultyTable());
 
-            try {
-                int questionNumber = Integer.parseInt(questionNumberString);
 
-                if (questionNumber >= 1 && questionNumber <= 4) {
-                    questionHighestAverage(questionNumber);
-                } else {
-                    JOptionPane.showMessageDialog(null, "Invalid question number. Please enter a number between 1 and 4.");
-                }
-            } catch (NumberFormatException ex) {
-                JOptionPane.showMessageDialog(null, "Invalid input. Please enter a valid question number.");
-            }
-        });
-        button5.addActionListener(e -> calculateAndDisplayOverallAverage());
+        frame.getContentPane().add(BorderLayout.WEST, buttonPanel);
 
-        // Center the Panel in the Frame
-        frame.getContentPane().add(BorderLayout.CENTER, panel);
-
-        // Center the Frame on the Screen
         frame.setLocationRelativeTo(null);
-
-        // Make the Frame visible
         frame.setVisible(true);
+    }
+
+    // I changed the UI from a GrabBag to a GridLayout
+    // I used add button to simplify the GUI placement
+    private void addButton(JPanel panel, String text, ActionListener listener) {
+        JButton button = new JButton(text);
+        button.addActionListener(listener);
+        panel.add(button);
     }
 
     private void displayIDAverage() {
         // Get user input for Faculty ID
         String facultyIDString = JOptionPane.showInputDialog("Enter Faculty ID:");
+
+
+        // Exit the method if the response is null
+        // I don't want to throw an error on cancel
+        if (facultyIDString == null) {
+            return;  //
+        }
 
         try {
             // Convert the input to an integer
@@ -131,26 +113,8 @@ public class FacultyReviewProgram {
             // Find the index of the faculty member in the data
             int index = findFacultyIndexByID(facultyID);
 
-            // Check if the faculty member is found
-            if (index != -1) {
-                // Format the averages to two decimal places
-                String formattedAverage1 = String.format("%.2f", calculateQuestionAverage(surveyData.getSurveyResponse1(), index));
-                String formattedAverage2 = String.format("%.2f", calculateQuestionAverage(surveyData.getSurveyResponse2(), index));
-                String formattedAverage3 = String.format("%.2f", calculateQuestionAverage(surveyData.getSurveyResponse3(), index));
-                String formattedAverage4 = String.format("%.2f", calculateQuestionAverage(surveyData.getSurveyResponse4(), index));
-
-                // Display information using JOptionPane or update your GUI components
-                JOptionPane.showMessageDialog(null,
-                        "Faculty Member ID: " + facultyData.getFacultyIds()[index] + "\n" +
-                                "Faculty Member Name: " + facultyData.getFacultyNames()[index] + "\n\n" +
-                                "Question Averages:\n" +
-                                "Question Average 1: " + formattedAverage1 + "\n" +
-                                "Question Average 2: " + formattedAverage2 + "\n" +
-                                "Question Average 3: " + formattedAverage3 + "\n" +
-                                "Question Average 4: " + formattedAverage4);
-            } else {
-                JOptionPane.showMessageDialog(null, "Faculty member not found.");
-            }
+            // Check method for documentation!
+            facultyCheck(index);
         } catch (NumberFormatException e) {
             JOptionPane.showMessageDialog(null, "Invalid input. Please enter a valid Faculty ID.");
         }
@@ -160,32 +124,40 @@ public class FacultyReviewProgram {
         // Get user input for Faculty Last Name
         String facultyLastName = JOptionPane.showInputDialog("Enter the Faculty Member's Last Name:");
 
+        // Exit the method if the response is null
+        // I don't want to throw an error on cancel
+        if (facultyLastName == null) {
+            return;  //
+        }
+
         // Find the index of the faculty member with the given last name
         int index = findFacultyIndexByLastName(facultyLastName);
 
-        // Check if the faculty member is found
-        if (index != -1) {
-            double[] averages = {
-                    calculateQuestionAverage(surveyData.getSurveyResponse1(), index),
-                    calculateQuestionAverage(surveyData.getSurveyResponse2(), index),
-                    calculateQuestionAverage(surveyData.getSurveyResponse3(), index),
-                    calculateQuestionAverage(surveyData.getSurveyResponse4(), index)
-            };
-
-            displayAveragesOutput(facultyData.getFacultyIds()[index], facultyData.getFacultyNames()[index], averages);
-        } else {
-            JOptionPane.showMessageDialog(null, "Faculty member not found.");
-        }
+        // Check method for documentation!
+        facultyCheck(index);
     }
 
     private void displayEmailAverage() {
         // Get user input for Faculty Email
         String facultyEmail = JOptionPane.showInputDialog("Enter the Faculty Member's Email:");
 
+        // Exit the method if the response is null
+        // I don't want to throw an error on cancel
+        if (facultyEmail == null) {
+            return;  //
+        }
+
         // Find the index of the faculty member with the given email
         int index = findFacultyIndexByEmail(facultyEmail);
 
-        // Check if the faculty member is found
+        // Check method for documentation!
+        facultyCheck(index);
+    }
+
+    // Intellij allowed me to refactor this code
+    // I use the refactor IDE method to create this
+    // It checks if the faculty member exists. Technology is great!
+    private void facultyCheck(int index) {
         if (index != -1) {
             double[] averages = {
                     calculateQuestionAverage(surveyData.getSurveyResponse1(), index),
@@ -201,38 +173,63 @@ public class FacultyReviewProgram {
     }
 
 
-    private void questionHighestAverage(int questionNumber) {
-        if (questionNumber < QUESTION_1_INDEX || questionNumber > QUESTION_4_INDEX) {
-            System.out.println("Invalid question number. Please enter a number between 1 and 4.");
-            return;
-        }
-
-        double highestAverage = -1;
-        int facultyIdWithHighestAverage = -1;
-
-        for (int i = 0; i < surveyData.getFacultyIds().length; i++) {
-            double[] responsesForQuestion = getResponsesForQuestion(surveyData, questionNumber);
-            double average = calculateAverage(responsesForQuestion);
-
-            if (average > highestAverage) {
-                highestAverage = average;
-                facultyIdWithHighestAverage = surveyData.getFacultyIds()[i];
-            }
-        }
-
-        // Display the result
-        displayQuestionHighestAverageResult(questionNumber, highestAverage, facultyIdWithHighestAverage);
-    }
-
-    private void calculateAndDisplayOverallAverage() {
+    private void questionHighestAverage() {
         // Get user input for the question number
         String questionNumberString = JOptionPane.showInputDialog("Enter Question Number (1-4):");
+
+        // Exit the method if the response is null
+        // I don't want to throw an error on cancel
+        if (questionNumberString == null) {
+            return;  //
+        }
 
         try {
             // Convert the input to an integer
             int questionNumber = Integer.parseInt(questionNumberString);
 
             // Validate the question number
+            if (questionNumber < 1 || questionNumber > 4) {
+                JOptionPane.showMessageDialog(null, "Invalid question number. Please enter a number between 1 and 4.");
+                return;
+            }
+
+            double highestAverage = -1;
+            int facultyIdWithHighestAverage = -1;
+
+            for (int i = 0; i < surveyData.getFacultyIds().length; i++) {
+                double[] responsesForQuestion = getResponsesForQuestion(surveyData, questionNumber);
+                double average = calculateAverage(responsesForQuestion);
+
+                if (average > highestAverage) {
+                    highestAverage = average;
+                    facultyIdWithHighestAverage = surveyData.getFacultyIds()[i];
+                }
+            }
+
+            // Display the result
+            displayQuestionHighestAverageResult(questionNumber, highestAverage, facultyIdWithHighestAverage);
+
+            // If entry isn't a number, throw an exception
+        } catch (NumberFormatException e) {
+            JOptionPane.showMessageDialog(null, "Invalid input. Please enter a valid question number.");
+        }
+    }
+
+    private void calculateAndDisplayOverallAverage() {
+        // Get user input for the question number
+        String questionNumberString = JOptionPane.showInputDialog("Enter Question Number (1-4):");
+
+        // Exit the method if the response is null
+        // I don't want to throw an error on cancel
+        if (questionNumberString == null) {
+            return;  //
+        }
+
+        try {
+            // Convert the input to an integer
+            int questionNumber = Integer.parseInt(questionNumberString);
+
+
             if (questionNumber < 1 || questionNumber > 4) {
                 JOptionPane.showMessageDialog(null, "Invalid question number. Please enter a number between 1 and 4.");
                 return;
@@ -247,29 +244,32 @@ public class FacultyReviewProgram {
             // Display the result
             displayOverallAverageOutput(questionNumber, overallAverage);
 
+            // If entry isn't a number, throw an exception
         } catch (NumberFormatException e) {
             JOptionPane.showMessageDialog(null, "Invalid input. Please enter a valid question number.");
         }
     }
 
-
+    // I wanted to create a method for each way to find a faculty member as needed
+    // This one gets faculty by ID
     private int findFacultyIndexByID(int facultyID) {
         int[] facultyIds = facultyData.getFacultyIds();
         for (int i = 0; i < facultyIds.length; i++) {
             if (facultyIds[i] == facultyID) {
-                return i; // Faculty member found, return the index
+                return i;
             }
         }
-        return -1; // Faculty member not found
+        return -1;
     }
 
-    // Helper method to find the index of a faculty member by ID
+
+    // I wanted to create a method for each way to find a faculty member as needed
+    // This one gets faculty by full name
     private String getFacultyNameById(int facultyId) {
         int[] facultyIds = facultyData.getFacultyIds();
 
         for (int i = 0; i < facultyIds.length; i++) {
             if (facultyIds[i] == facultyId) {
-                // Use the existing getFacultyNames method to get the full name
                 return facultyData.getFacultyNames()[i];
             }
         }
@@ -277,6 +277,9 @@ public class FacultyReviewProgram {
         return "Faculty Name Not Found";
     }
 
+
+    // I wanted to create a method for each way to find a faculty member as needed
+    // This one gets faculty by last name
     private int findFacultyIndexByLastName(String lastName) {
         lastName = lastName.trim();  // Trim leading and trailing spaces
         String[] facultyLastNames = facultyData.getFacultyLastNames();
@@ -289,6 +292,8 @@ public class FacultyReviewProgram {
         return -1; // Faculty member not found
     }
 
+    // I wanted to create a method for each way to find a faculty member as needed
+    // This one gets email and ID together
     private String getFacultyEmailById(int facultyId) {
         int[] facultyIds = facultyData.getFacultyIds();
 
@@ -302,19 +307,22 @@ public class FacultyReviewProgram {
         return "Faculty Email Not Found";
     }
 
+
+    // I wanted to create a method for each way to find a faculty member as needed
+    // This one gets faculty by email
     private int findFacultyIndexByEmail(String email) {
-        email = email.trim(); // Trim leading and trailing spaces
+        email = email.trim();
         String[] facultyEmails = facultyData.getFacultyEmails();
 
         for (int i = 0; i < facultyEmails.length; i++) {
             if (facultyEmails[i].equalsIgnoreCase(email)) {
-                return i; // Faculty member found, return the index
+                return i;
             }
         }
-        return -1; // Faculty member not found
+        return -1;
     }
 
-
+    // Used to grab the data for the responses for a specific question
     private double[] getResponsesForQuestion(SurveyData surveyData, int questionNumber) {
         return switch (questionNumber) {
             case 1 -> surveyData.getSurveyResponse1();
@@ -344,12 +352,13 @@ public class FacultyReviewProgram {
         for (int i = 0; i < questionResponses.length; i++) {
             facultyResponses[i] = questionResponses[i + facultyIndex * questionResponses.length];
         }
-        return Arrays.stream(facultyResponses).average().orElse(Double.NaN);
+
+        return calculateAverage(facultyResponses);
     }
 
     private double calculateAverage(double[] values) {
-
         double sum = 0.0;
+
         for (double value : values) {
             sum += value;
         }
@@ -358,41 +367,46 @@ public class FacultyReviewProgram {
     }
 
     private double calculateOverallAverageForQuestion(double[] questionResponses) {
-        double sum = 0;
+        double sum = 0.0;
 
         for (double response : questionResponses) {
             sum += response;
         }
 
-        return questionResponses.length > 0 ? sum / questionResponses.length : Double.NaN;
+        return questionResponses.length > 0 ? sum / questionResponses.length : 0;
     }
 
+    // Can you send me a note as to why Intellij prefers strings?
+    // Please see below
+    // 'StringBuilder questionAveragesDisplayMessage' can be replaced with 'String' and it will work the same
     private void displayAveragesOutput(int facultyId, String facultyName, double[] averages) {
         StringBuilder questionAveragesDisplayMessage = new StringBuilder();
         questionAveragesDisplayMessage.append("Faculty Member ID: ").append(facultyId).append("\n")
                 .append("Faculty Member Name: ").append(facultyName).append("\n\n")
                 .append("Question Averages\n")
-                .append("Question Average 1: ").append(String.format("%.2f", averages[0])).append("\n")
-                .append("Question Average 2: ").append(String.format("%.2f", averages[1])).append("\n")
-                .append("Question Average 3: ").append(String.format("%.2f", averages[2])).append("\n")
-                .append("Question Average 4: ").append(String.format("%.2f", averages[3]));
+                .append(getQuestionText(1)).append(": ").append(String.format("%.2f", averages[0])).append("\n")
+                .append(getQuestionText(2)).append(": ").append(String.format("%.2f", averages[1])).append("\n")
+                .append(getQuestionText(3)).append(": ").append(String.format("%.2f", averages[2])).append("\n")
+                .append(getQuestionText(4)).append(": ").append(String.format("%.2f", averages[3])).append("\n");
 
 
         JOptionPane.showMessageDialog(null, questionAveragesDisplayMessage.toString(), "Faculty Averages", JOptionPane.INFORMATION_MESSAGE);
     }
 
+    // I love StringBuilder but Intellij wants me to switch to a string!
     private void displayQuestionHighestAverageResult(int questionNumber, double highestAverage, int facultyIdWithHighestAverage) {
         StringBuilder highestAverageDisplayMessage = new StringBuilder();
         highestAverageDisplayMessage.append("Faculty Member ID: ").append(facultyIdWithHighestAverage).append("\n")
                 .append("Faculty Member Name: ").append(getFacultyNameById(facultyIdWithHighestAverage)).append("\n")
                 .append("Faculty Member Email: ").append(getFacultyEmailById(facultyIdWithHighestAverage)).append("\n")
-                .append("Question ").append(getQuestionText(questionNumber)).append("\n")
+                .append("\n").append(getQuestionText(questionNumber)).append("\n")
                 .append("Question Highest Average: ").append(String.format("%.2f", highestAverage));
 
         JOptionPane.showMessageDialog(null, highestAverageDisplayMessage.toString(), "Question Highest Average", JOptionPane.INFORMATION_MESSAGE);
     }
 
 
+    // I love StringBuilder but Intellij wants me to switch to a string!
     private void displayOverallAverageOutput(int questionNumber, double overallAverage) {
         StringBuilder questionAverageDisplayMessage = new StringBuilder();
         questionAverageDisplayMessage.append(getQuestionText(questionNumber)).append("\n")
@@ -400,5 +414,49 @@ public class FacultyReviewProgram {
 
         JOptionPane.showMessageDialog(null, questionAverageDisplayMessage.toString(), "Overall Question Average", JOptionPane.INFORMATION_MESSAGE);
     }
+
+
+    // this method will display Faculty Information in a Table
+    // I'll be honest because this is not covered in class. I looked it up online
+    // I found this on StackOverflow: https://stackoverflow.com/questions/10620448/most-simple-code-to-populate-jtable-from-resultset
+    // I also used Oracles Text: https://docs.oracle.com/javase/tutorial/uiswing/components/table.html
+    private void displayFacultyTable() {
+        // Create a DefaultTableModel with columns
+        DefaultTableModel model = new DefaultTableModel(
+                new Object[][]{},
+                new Object[]{"ID", "First Name", "Last Name", "Email"}
+        );
+
+        // Populate the model with faculty data
+        // Loop through the faculty data and add each row to the model
+        for (int i = 0; i < facultyData.getFacultyIds().length; i++) {
+            model.addRow(new Object[]{
+                    facultyData.getFacultyIds()[i],
+                    facultyData.getFacultyFirstNames()[i],
+                    facultyData.getFacultyLastNames()[i],
+                    facultyData.getFacultyEmails()[i]
+            });
+        }
+
+        // This will create a JTable with the DefaultTableModel
+        // https://docs.oracle.com/javase/tutorial/uiswing/components/table.html
+        JTable facultyTable = new JTable(model);
+
+        // This will create a JScrollPane to the table with a scrolling option
+        // https://docs.oracle.com/javase/tutorial/uiswing/components/scrollpane.html
+        JScrollPane scrollPane = new JScrollPane(facultyTable);
+
+        // Create JFrame to display the table
+        JFrame frame = new JFrame("Faculty Information Table");
+        frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+        frame.setSize(800, 400); // Adjust the size as needed
+
+        frame.getContentPane().add(scrollPane, BorderLayout.CENTER);
+
+        frame.setLocationRelativeTo(null);
+
+        frame.setVisible(true);
+    }
+
 
 }

@@ -42,7 +42,6 @@ public class SurveyData {
     public static SurveyData readSurveyFromFile(String filePath) throws IOException {
         BufferedReader reader = new BufferedReader(new FileReader(filePath));
 
-        // Assuming the format is: faculty_ID,surveyResponse1,surveyResponse2,surveyResponse3,surveyResponse4
         int lineCount = (int) reader.lines().count();
         reader.close();
 

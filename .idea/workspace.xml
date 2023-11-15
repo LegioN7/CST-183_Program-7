@@ -5,14 +5,10 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="ea49641e-97c7-41d3-9ca2-e6b8b50cbb35" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/faculty.txt" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/facultyReviewData.txt" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/program07FA23.pdf" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/FacultyData.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/SurveyData.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.gitattributes" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/README.md" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/FacultyData.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/FacultyData.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/FacultyReviewProgram.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/FacultyReviewProgram.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/SurveyData.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/SurveyData.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -59,14 +55,7 @@
     &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
   }
 }</component>
-  <component name="RunManager" selected="Application.FacultyReviewProgram">
-    <configuration name="FacultyReviewGUI" type="Application" factoryName="Application" temporary="true" nameIsGenerated="true">
-      <option name="MAIN_CLASS_NAME" value="FacultyReviewGUI" />
-      <module name="untitled" />
-      <method v="2">
-        <option name="Make" enabled="true" />
-      </method>
-    </configuration>
+  <component name="RunManager" selected="Application.FacultyReviewProgram (1)">
     <configuration name="FacultyReviewProgram (1)" type="Application" factoryName="Application" temporary="true" nameIsGenerated="true">
       <option name="MAIN_CLASS_NAME" value="FacultyReviewProgram" />
       <module name="untitled" />
@@ -88,7 +77,14 @@
         <option name="Make" enabled="true" />
       </method>
     </configuration>
-    <configuration name="FacultyReviewProgram" type="Application" factoryName="Application" temporary="true" nameIsGenerated="true">
+    <configuration name="FacultyReviewProgram (4)" type="Application" factoryName="Application" temporary="true" nameIsGenerated="true">
+      <option name="MAIN_CLASS_NAME" value="FacultyReviewProgram" />
+      <module name="untitled" />
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="FacultyReviewProgram (5)" type="Application" factoryName="Application" temporary="true" nameIsGenerated="true">
       <option name="MAIN_CLASS_NAME" value="FacultyReviewProgram" />
       <module name="untitled" />
       <method v="2">
@@ -97,11 +93,11 @@
     </configuration>
     <recent_temporary>
       <list>
-        <item itemvalue="Application.FacultyReviewProgram" />
+        <item itemvalue="Application.FacultyReviewProgram (1)" />
+        <item itemvalue="Application.FacultyReviewProgram (4)" />
         <item itemvalue="Application.FacultyReviewProgram (3)" />
         <item itemvalue="Application.FacultyReviewProgram (2)" />
-        <item itemvalue="Application.FacultyReviewProgram (1)" />
-        <item itemvalue="Application.FacultyReviewGUI" />
+        <item itemvalue="Application.FacultyReviewProgram (5)" />
       </list>
     </recent_temporary>
   </component>
@@ -117,7 +113,7 @@
       <workItem from="1699757114343" duration="1404000" />
       <workItem from="1699933580707" duration="54000" />
       <workItem from="1699933642129" duration="13558000" />
-      <workItem from="1699990826501" duration="3940000" />
+      <workItem from="1699990826501" duration="10111000" />
     </task>
     <servers />
   </component>
